@@ -7,7 +7,7 @@ description: >
   "scaffold skill", "generate skill", "create SKILL.md", or "implement skill".
 ---
 
-# Skill Builder -- Scaffold & Generate
+# Skill Builder — Scaffold & Generate
 
 ## Process
 

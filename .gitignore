@@ -8,18 +8,22 @@ build/
 
 # Environment
 .env
+.env.*
 .venv/
 venv/
 
 # OS
 .DS_Store
 Thumbs.db
+Desktop.ini
+._*
 
-# Editor
+# Editor / IDE
 *.swp
 *.swo
 *~
-.vscode/settings.json
+.vscode/
+.idea/
 
 # Packages
 *.skill
@@ -28,3 +32,13 @@ node_modules/
 # Temp
 *.tmp
 *.bak
+*.log
+
+# Research / working docs (not part of the skill)
+agent-skills-multi-platform.md
+agent-skills-standard.md
+google-ecosystem-research.md
+CONVERTER-UPGRADE-PLAN.md
+The-Complete-Guide-to-Building-Skills-for-Claude.md
+building-claude-video.md
+claude-video/

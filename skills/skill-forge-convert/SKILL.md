@@ -11,7 +11,7 @@ description: >
   "convert to antigravity", or "convert to cursor".
 ---
 
-# Skill Conversion -- Multi-Platform
+# Skill Conversion — Multi-Platform
 
 Convert Claude Code skills to work on OpenAI Codex, Google Gemini CLI, Google
 Antigravity, and Cursor while maintaining quality and following each platform's

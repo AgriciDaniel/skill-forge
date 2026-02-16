@@ -20,7 +20,7 @@ allowed-tools:
   - WebFetch
 ---
 
-# Skill Forge -- Ultimate Claude Code Skill Creator
+# Skill Forge — Ultimate Claude Code Skill Creator
 
 Build production-grade Claude Code skills following the Agent Skills open standard,
 progressive disclosure architecture, and battle-tested patterns from high-performing

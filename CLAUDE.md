@@ -1,4 +1,4 @@
-# Skill Forge -- Ultimate Claude Code Skill Creator
+# Skill Forge — Ultimate Claude Code Skill Creator
 
 ## Project Overview
 
@@ -9,24 +9,26 @@ Skills open standard and the 3-layer architecture (directive, orchestration, exe
 ## Architecture
 
 ```
-claude-skill/
-  CLAUDE.md                          # This file (project instructions)
+skill-forge/                         # Repository root
+  CLAUDE.md                          # Project instructions
   skill-forge/                       # Main orchestrator skill (Tier 4)
     SKILL.md                         # Entry point, routing table, core rules
-    references/                      # On-demand knowledge files (9 files)
+    references/                      # On-demand knowledge files (10 files)
       anatomy.md                     # Skill file structure, naming, agent format
       patterns.md                    # Proven workflow patterns
-      frontmatter-spec.md           # YAML frontmatter specification (skills)
+      frontmatter-spec.md           # YAML frontmatter specification
       description-guide.md          # Writing effective descriptions
       testing-guide.md              # Testing methodology
       pro-agent.md                  # 3-layer architecture deep dive
       tools-reference.md            # Tool names, permission patterns, MCP
       hooks-reference.md            # Hook events, types, quality gates
       skills-activation.md          # Skill discovery, activation, features
+      platforms.md                   # Multi-platform conversion rules
     scripts/                         # Deterministic execution scripts
       init_skill.py                 # Scaffold new skills
       validate_skill.py             # Validate skill structure
       package_skill.py              # Package for distribution
+      convert_skill.py              # Convert skills to other platforms
     assets/
       templates/                     # Skill templates by tier
         minimal.md                  # Tier 1: single SKILL.md
@@ -39,10 +41,12 @@ claude-skill/
     skill-forge-review/SKILL.md     # Audit and validate skills
     skill-forge-evolve/SKILL.md     # Improve skills from feedback
     skill-forge-publish/SKILL.md    # Package and distribute skills
+    skill-forge-convert/SKILL.md    # Convert skills to other platforms
   agents/                            # Subagent definitions
     skill-forge-architect.md        # Architecture design agent
     skill-forge-writer.md           # SKILL.md content writer agent
     skill-forge-validator.md        # Validation agent
+    skill-forge-converter.md        # Platform conversion agent
   install.sh                         # Installation script
 ```
 
@@ -73,13 +77,5 @@ claude-skill/
 | `/skill-forge review` | Audit existing skill quality |
 | `/skill-forge evolve` | Improve skill from feedback |
 | `/skill-forge publish` | Package for distribution |
+| `/skill-forge convert` | Convert skills to other platforms |
 
-## Related Skills Built with Skill Forge
-
-### Skool Skill Ecosystem (Tier 4)
-- **Source**: `~/Desktop/claude-skool/` (25 files: 1 main + 7 sub-skills + 4 agents + 4 references + 6 templates + 2 scripts)
-- **Installed at**: `~/.claude/skills/skool*/`
-- **Communities**: ai-marketing-hub (free), ai-marketing-hub-pro (paid $59-79/mo)
-- **MCP Server**: `~/Workflows/skool-mcp/` (FastMCP + Playwright, provides live Skool data tools)
-- **Live Data Snapshots**: `~/Desktop/claude-skool/data/` (pro-community-snapshot.md, free-community-snapshot.md)
-- **MCP Tools**: `skool_login`, `skool_get_community`, `skool_list_courses`, `skool_get_course`, `skool_get_lesson`, `skool_get_members`, `skool_get_leaderboard`, `skool_get_feed`
