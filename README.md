@@ -1,5 +1,7 @@
 # Skill Forge — Ultimate Claude Code Skill Creator
 
+![Skill Forge](skill-forge-header.jpeg)
+
 Design, scaffold, build, review, evolve, and publish production-grade Claude Code skills following the [Agent Skills open standard](https://agentskills.io).
 
 ## Features
