@@ -94,7 +94,7 @@ python skill-forge/scripts/init_skill.py devops-toolkit --tier 3 --sub docker,k8
 skill-forge/                       # Main orchestrator (Tier 4)
   SKILL.md                         # Entry point and routing
   references/                      # On-demand knowledge (10 files)
-  scripts/                         # Execution scripts (7 files)
+  scripts/                         # Execution scripts (8 files)
   assets/templates/                # Skill templates (4 tiers)
 skills/
   skill-forge-plan/                # Architecture planning
