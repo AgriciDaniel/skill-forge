@@ -22,49 +22,38 @@ import sys
 from pathlib import Path
 from typing import Any
 
-
-def parse_frontmatter(content: str) -> tuple[dict[str, Any] | None, str]:
-    """Parse YAML frontmatter from SKILL.md content."""
-    if not content.startswith('---'):
-        return None, content
-
-    parts = content.split('---', 2)
-    if len(parts) < 3:
-        return None, content
-
-    yaml_text = parts[1].strip()
-    body = parts[2].strip()
-
-    frontmatter: dict[str, Any] = {}
-    current_key = ""
-    current_value = ""
-    in_multiline = False
-
-    for line in yaml_text.split('\n'):
-        stripped = line.strip()
-
-        if in_multiline:
-            if stripped and not re.match(r'^[a-z_-]+:', stripped):
-                current_value += " " + stripped
-                continue
-            else:
+# Use shared parser when available; inline fallback for standalone execution
+try:
+    from skill_utils import parse_frontmatter_simple as parse_frontmatter
+except ImportError:
+    def parse_frontmatter(content: str) -> tuple[dict[str, Any] | None, str]:  # type: ignore[misc]
+        """Parse YAML frontmatter from SKILL.md content (inline fallback)."""
+        if not content.startswith('---'):
+            return None, content
+        parts = content.split('---', 2)
+        if len(parts) < 3:
+            return None, content
+        yaml_text, body = parts[1].strip(), parts[2].strip()
+        frontmatter: dict[str, Any] = {}
+        current_key, current_value, in_multiline = "", "", False
+        for line in yaml_text.split('\n'):
+            stripped = line.strip()
+            if in_multiline:
+                if stripped and not re.match(r'^[a-z_-]+:', stripped):
+                    current_value += " " + stripped
+                    continue
                 frontmatter[current_key] = current_value.strip()
                 in_multiline = False
-
-        match = re.match(r'^([a-z_-]+):\s*(.*)', stripped)
-        if match:
-            current_key = match.group(1)
-            value = match.group(2).strip()
-            if value in ('>', '|'):
-                in_multiline = True
-                current_value = ""
-            elif value:
-                frontmatter[current_key] = value.strip('"').strip("'")
-
-    if in_multiline:
-        frontmatter[current_key] = current_value.strip()
-
-    return frontmatter, body
+            match = re.match(r'^([a-z_-]+):\s*(.*)', stripped)
+            if match:
+                current_key, value = match.group(1), match.group(2).strip()
+                if value in ('>', '|'):
+                    in_multiline, current_value = True, ""
+                elif value:
+                    frontmatter[current_key] = value.strip('"').strip("'")
+        if in_multiline:
+            frontmatter[current_key] = current_value.strip()
+        return frontmatter, body
 
 
 def split_eval_set(

@@ -37,9 +37,9 @@ skills like claude-seo and claude-ads.
 | `/skill-forge build <name>` | Scaffold and build a skill from plan |
 | `/skill-forge review <path>` | Audit an existing skill for quality |
 | `/skill-forge evolve <path>` | Improve skill based on feedback/issues |
-| `/skill-forge publish <path>` | Package and prepare for distribution |
 | `/skill-forge eval <path>` | Run eval pipeline to test skill quality |
 | `/skill-forge benchmark <path>` | Benchmark skill with variance analysis |
+| `/skill-forge publish <path>` | Package and prepare for distribution |
 | `/skill-forge convert <path>` | Convert skill to Codex/Gemini/Antigravity/Cursor |
 
 ## Orchestration Logic

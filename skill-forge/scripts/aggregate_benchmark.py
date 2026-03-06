@@ -191,9 +191,17 @@ def aggregate_benchmark(
     with_duration_mean = calculate_stats(all_with_durations)["mean"] if all_with_durations else 0
     baseline_duration_mean = calculate_stats(all_baseline_durations)["mean"] if all_baseline_durations else 0
 
-    improvement_ratio = round(with_stats["mean"] / baseline_stats["mean"], 2) if baseline_stats["mean"] > 0 else 0
-    token_savings = round(with_token_mean / baseline_token_mean, 2) if baseline_token_mean > 0 else 0
-    time_savings = round(with_duration_mean / baseline_duration_mean, 2) if baseline_duration_mean > 0 else 0
+    # Ratios: >1 means with_skill is better for pass rate, <1 means with_skill uses fewer tokens/time
+    # Handle edge cases: no baseline data or zero baseline values
+    if baseline_stats["mean"] > 0:
+        improvement_ratio = round(with_stats["mean"] / baseline_stats["mean"], 2)
+    elif with_stats["mean"] > 0:
+        improvement_ratio = 999.99  # Skill passes but baseline doesn't (capped for JSON)
+    else:
+        improvement_ratio = 1.0  # Both zero — no improvement
+
+    token_savings = round(with_token_mean / baseline_token_mean, 2) if baseline_token_mean > 0 else 1.0
+    time_savings = round(with_duration_mean / baseline_duration_mean, 2) if baseline_duration_mean > 0 else 1.0
 
     benchmark: dict[str, Any] = {
         "skill_name": skill_name,

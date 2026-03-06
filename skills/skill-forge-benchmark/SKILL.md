@@ -156,6 +156,13 @@ If any threshold fails:
 3. Recommend running `/skill-forge evolve` to address issues
 4. Do NOT approve for publish until thresholds pass
 
+## Error Handling
+
+- **Flaky trials**: If a trial times out or crashes, exclude it from variance calculation and note `"trials_completed"` vs `"trials_requested"` in per-eval results
+- **Insufficient trials**: If fewer than 2 trials complete for an eval, flag variance as `"unreliable"` in the report
+- **Missing baseline**: If baseline runs fail entirely, report with-skill results only and skip improvement_ratio
+- **Threshold edge cases**: If pass_rate equals the threshold exactly, treat as PASS
+
 ## Integration with Other Sub-Skills
 
 - **skill-forge-eval**: Provides the eval set and grading infrastructure

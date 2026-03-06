@@ -32,6 +32,7 @@ skill-forge/                         # Repository root
       generate_eval_set.py          # Generate trigger eval sets from SKILL.md
       aggregate_benchmark.py        # Aggregate eval results into benchmarks
       optimize_description.py       # Optimize descriptions with train/test split
+      skill_utils.py                # Shared utilities (frontmatter parser)
     assets/
       templates/                     # Skill templates by tier
         minimal.md                  # Tier 1: single SKILL.md

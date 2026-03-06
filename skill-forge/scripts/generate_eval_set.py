@@ -18,49 +18,38 @@ import sys
 from pathlib import Path
 from typing import Any
 
-
-def parse_frontmatter(content: str) -> tuple[dict[str, Any] | None, str]:
-    """Parse YAML frontmatter from SKILL.md content."""
-    if not content.startswith('---'):
-        return None, content
-
-    parts = content.split('---', 2)
-    if len(parts) < 3:
-        return None, content
-
-    yaml_text = parts[1].strip()
-    body = parts[2].strip()
-
-    frontmatter: dict[str, Any] = {}
-    current_key = ""
-    current_value = ""
-    in_multiline = False
-
-    for line in yaml_text.split('\n'):
-        stripped = line.strip()
-
-        if in_multiline:
-            if stripped and not re.match(r'^[a-z_-]+:', stripped):
-                current_value += " " + stripped
-                continue
-            else:
+# Use shared parser when available; inline fallback for standalone execution
+try:
+    from skill_utils import parse_frontmatter_simple as parse_frontmatter
+except ImportError:
+    def parse_frontmatter(content: str) -> tuple[dict[str, Any] | None, str]:  # type: ignore[misc]
+        """Parse YAML frontmatter from SKILL.md content (inline fallback)."""
+        if not content.startswith('---'):
+            return None, content
+        parts = content.split('---', 2)
+        if len(parts) < 3:
+            return None, content
+        yaml_text, body = parts[1].strip(), parts[2].strip()
+        frontmatter: dict[str, Any] = {}
+        current_key, current_value, in_multiline = "", "", False
+        for line in yaml_text.split('\n'):
+            stripped = line.strip()
+            if in_multiline:
+                if stripped and not re.match(r'^[a-z_-]+:', stripped):
+                    current_value += " " + stripped
+                    continue
                 frontmatter[current_key] = current_value.strip()
                 in_multiline = False
-
-        match = re.match(r'^([a-z_-]+):\s*(.*)', stripped)
-        if match:
-            current_key = match.group(1)
-            value = match.group(2).strip()
-            if value in ('>', '|'):
-                in_multiline = True
-                current_value = ""
-            elif value:
-                frontmatter[current_key] = value.strip('"').strip("'")
-
-    if in_multiline:
-        frontmatter[current_key] = current_value.strip()
-
-    return frontmatter, body
+            match = re.match(r'^([a-z_-]+):\s*(.*)', stripped)
+            if match:
+                current_key, value = match.group(1), match.group(2).strip()
+                if value in ('>', '|'):
+                    in_multiline, current_value = True, ""
+                elif value:
+                    frontmatter[current_key] = value.strip('"').strip("'")
+        if in_multiline:
+            frontmatter[current_key] = current_value.strip()
+        return frontmatter, body
 
 
 def extract_trigger_phrases(description: str) -> list[str]:
@@ -158,27 +147,33 @@ def generate_negative_evals(
     name: str,
     keywords: list[str],
 ) -> list[dict[str, Any]]:
-    """Generate should-not-trigger eval entries."""
-    # Generic queries that should never trigger a specialized skill
-    negative_prompts = [
-        "What's the weather like in Tokyo today?",
-        "Write me a haiku about sunset",
-        "How do I install Python on Windows?",
-        "Explain the theory of relativity in simple terms",
-        "What's 2 + 2?",
-        "Tell me a joke about programmers",
-        "Summarize this email thread for me",
-        "What are the best restaurants in San Francisco?",
-        "Help me write a cover letter for a software engineering job",
-        "Convert this CSV to JSON format",
+    """Generate should-not-trigger eval entries.
+
+    Best practice: negative evals should be near-misses that share keywords
+    with the skill but need different tools. Avoid obviously irrelevant
+    queries like "what's the weather" — those don't test real disambiguation.
+    """
+    # Near-miss templates that share domain keywords but need different tools
+    near_miss_templates = [
+        "Can you explain what {keyword} means in general terms?",
+        "Write documentation about the concept of {keyword} for my README",
+        "I'm learning about {keyword} -- what are some good tutorials?",
+        "What's the difference between {keyword} and similar approaches?",
+        "Search GitHub for open-source projects related to {keyword}",
+        "Debug this error I'm getting -- it mentions {keyword} in the stack trace",
+        "Refactor this function that handles {keyword} logic to be more readable",
+        "Add unit tests for the {keyword} module in my project",
+        "Review this PR that changes how we handle {keyword}",
+        "Set up a CI/CD pipeline that includes {keyword} validation steps",
     ]
 
     evals: list[dict[str, Any]] = []
-    for i, prompt in enumerate(negative_prompts[:10]):
+    for i, template in enumerate(near_miss_templates[:10]):
+        keyword = keywords[i % len(keywords)] if keywords else "this"
         evals.append({
             "eval_id": 100 + i,
-            "eval_name": f"no-trigger-{i}",
-            "prompt": prompt,
+            "eval_name": f"no-trigger-near-miss-{i}",
+            "prompt": template.format(keyword=keyword),
             "input_files": [],
             "assertions": [
                 {

@@ -57,22 +57,45 @@ If no eval set exists, generate one:
 
 ### Step 2: Set Up Workspace
 
-Create an iteration workspace:
+Create the eval workspace **outside** the skill directory to avoid confusing eval
+artifacts with skill files. Use a sibling directory or a dedicated location:
+
 ```
 eval-workspace/
   iteration-1/
     eval-0/
+      eval_metadata.json        # Assertions and config for this eval
       with_skill/
-        outputs/
+        outputs/                # Skill execution outputs
+        timing.json             # Token count + duration
+        grading.json            # Assertion results + evidence
       baseline/
         outputs/
+        timing.json
+        grading.json
     eval-1/
+      eval_metadata.json
       with_skill/
         outputs/
+        timing.json
+        grading.json
       baseline/
         outputs/
-    benchmark.json
-    benchmark.md
+        timing.json
+        grading.json
+    benchmark.json              # Aggregated metrics
+    benchmark.md                # Human-readable report
+```
+
+For each eval directory, create `eval_metadata.json` from the eval set entry:
+```json
+{
+  "eval_id": 0,
+  "eval_name": "descriptive-name",
+  "prompt": "The user's task prompt",
+  "assertions": [...],
+  "should_trigger": true
+}
 ```
 
 ### Step 3: Execute Eval Runs
@@ -185,9 +208,18 @@ Pass feedback to `/skill-forge evolve` for the next iteration.
 
 For rigorous A/B testing between skill versions:
 1. Delegate to `agents/skill-forge-comparator.md`
-2. Comparator sees outputs from both versions without labels
-3. Rates each output on assertion criteria
-4. Returns preference scores without knowing which is "new" vs "old"
+2. Pass two directories: `eval-<ID>/with_skill/outputs/` and `eval-<ID>/baseline/outputs/`
+3. Comparator assigns random labels (Version A / Version B) so it cannot know which is new
+4. Rates each output on assertion criteria from `eval_metadata.json`
+5. Returns preference scores without knowing which is "new" vs "old"
+
+## Error Handling
+
+- **Executor timeout**: If a run exceeds 5 minutes, terminate and mark as `"timed_out": true` in timing.json
+- **Executor failure**: If a run crashes, save the error to `error.txt` in the run directory and continue with remaining evals
+- **Grading failure**: If grading cannot determine pass/fail, mark assertion as `"passed": null` with evidence explaining why
+- **Missing files**: If timing.json or grading.json is missing after a run, flag the eval as incomplete in the report
+- **Partial completion**: Always aggregate and report whatever results are available — do not block on one failed eval
 
 ## Quality Gates
 
