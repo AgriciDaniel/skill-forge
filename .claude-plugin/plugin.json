@@ -1,0 +1,8 @@
+{
+  "name": "skill-forge",
+  "version": "1.0.0",
+  "description": "Ultimate Claude Code skill creator. Design, scaffold, build, review, evolve, and publish production-grade AI agent skills following the Agent Skills open standard and 3-layer architecture.",
+  "author": "AgriciDaniel",
+  "license": "MIT",
+  "homepage": "https://github.com/AgriciDaniel/skill-forge"
+}
